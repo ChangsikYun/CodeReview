@@ -5,7 +5,7 @@
 TypingMachine::TypingMachine() {
   this->pCursor = new Node('|');
   this->pHead = this->pCursor;
-  this->pLast = this->pCursor;
+  this->pTail = this->pCursor;
   this->count = 0;
   return;
 }
@@ -14,46 +14,46 @@ void TypingMachine::HomeKey() {
 	if (this->pHead == this->pCursor)
 		return;
 	
-	if (this->pCursor->pPrev && this->pCursor->pNext) {
-		this->pCursor->pPrev->pNext = this->pCursor->pNext;
-		this->pCursor->pNext->pPrev = this->pCursor->pPrev;
+	Node *nHead = this->pHead;
+	Node *nPrev = this->pCursor->GetPreviousNode();
+	
+	if (this->pTail == this->pCursor) {
+		if (this->pCursor->GetPreviousNode() != nullptr) {
+			this->pTail = this->pCursor->GetPreviousNode();
+		}
 	}
-	else if (this->pCursor->pPrev==nullptr && this->pCursor->pNext) {
-		this->pCursor->pNext->pPrev = nullptr;
+
+	if (nPrev) {
+		nPrev->EraseNextNode();	
 	}
-	else if (this->pCursor->pPrev && this->pCursor->pNext == nullptr) {
-		this->pCursor->pPrev->pNext = nullptr;
-	}
-	if (this->pCursor->pPrev && this->pLast == this->pCursor)
-		this->pLast = this->pCursor->pPrev;
-	this->pCursor->pNext = this->pHead;
-	this->pCursor->pPrev = nullptr;
+
+	Node *newCursor = nHead->InsertPreviousNode('|');
+	this->pCursor = newCursor;
 	this->pHead = this->pCursor;
+
     return;
 }
 
 void TypingMachine::EndKey() {
-	if (this->pLast == this->pCursor)
+	if (this->pTail == this->pCursor)
 		return;
 
-	if (this->pCursor->pPrev && this->pCursor->pNext) {
-		this->pCursor->pPrev->pNext = this->pCursor->pNext;
-		this->pCursor->pNext->pPrev = this->pCursor->pPrev;
-	}
-	else if (this->pCursor->pPrev == nullptr && this->pCursor->pNext) {
-		this->pCursor->pNext->pPrev = nullptr;
-	}
-	else if (this->pCursor->pPrev && this->pCursor->pNext == nullptr) {
-		this->pCursor->pPrev->pNext = nullptr;
+	Node *nTail = this->pTail;
+	Node *nPrev = this->pCursor->GetPreviousNode();
+
+	if (this->pHead == this->pCursor) {
+		if (this->pCursor->GetNextNode() != nullptr) {
+			this->pHead = this->pCursor->GetNextNode();
+		}
 	}
 
-	if (this->pCursor->pNext && this->pHead == this->pCursor)
-		this->pHead = this->pCursor->pNext;
+	if (nPrev) {
+		nPrev->EraseNextNode();
+	}
 
-	this->pLast->pNext = this->pCursor;
-	this->pCursor->pPrev = this->pLast;
-	this->pCursor->pNext = nullptr;
-	this->pLast = this->pCursor;
+	Node *newCursor = nTail->InsertNextNode('|');
+	this->pCursor = newCursor;
+	this->pTail = this->pCursor;
 	return;
 }
 
@@ -63,69 +63,41 @@ void TypingMachine::LeftKey() {
 		return;
 
 	Node *pNode = this->pCursor->GetPreviousNode();
-	Node *ppNode = pNode->GetPreviousNode();
-	if (ppNode) {
-		ppNode->pNext = this->pCursor;
-		this->pCursor->pPrev = ppNode;
-	}
-	else
-	{
-		this->pHead = this->pCursor;
-	}
-	if (pNode) {
-		pNode->pPrev = this->pCursor;
-		pNode->pNext = this->pCursor->pNext;
-		this->pCursor->pNext = pNode;
+	if (this->pTail == this->pCursor)
+		this->pTail = pNode;
+	pNode->EraseNextNode();
+	
+	Node *newCursor = pNode->InsertPreviousNode ('|');
+	this->pCursor = newCursor;
 
-		if (this->pLast == this->pCursor)
-			this->pLast = pNode;
-		
-	}
-	 
+	if (pNode == this->pHead)
+		this->pHead = newCursor;
+
 	return;
 }
 
 void TypingMachine::RightKey() {
-	if (this->pLast == this->pCursor)
+	if (this->pTail == this->pCursor)
 		return;
 
-	Node *nNode = this->pCursor->GetNextNode();
-	Node *nnNode = nNode->GetNextNode();
-	Node *pNode = this->pCursor->GetPreviousNode();
+	Node *pNode = this->pCursor->GetNextNode();
+	if (this->pHead == this->pCursor)
+		this->pHead = pNode;
+	pNode->ErasePreviousNode();
 
-	if (pNode && nNode) {
-		pNode->pNext = nNode;
-		nNode->pPrev = pNode;
-	}
+	Node *newCursor = pNode->InsertNextNode('|');
+	this->pCursor = newCursor;
 	
-	if (nnNode) {
-		nnNode->pPrev = this->pCursor;
-		this->pCursor->pNext = nnNode;
-	}
-	else
-	{
-		this->pLast = this->pCursor;
-		this->pCursor->pNext = nullptr;
-	}
-	if (nNode) {
-		nNode->pNext = this->pCursor;
-		nNode->pPrev = pNode;
-		this->pCursor->pPrev = nNode;
-
-		if (this->pHead == this->pCursor)
-			this->pHead = nNode;
-	}
+	if (pNode == this->pTail)
+		this->pTail = newCursor;
 
 	return;
 }
 
 bool TypingMachine::TypeKey(char key) {
 
-	if (this->count > 100)
-		return false;
-	if (key < 0x20 || key > 0x7E)
-		return false;
-	// 100개 미만 처리 확인 필요
+	if (this->count > 100 || (key < 0x20 || key > 0x7E))
+		return false;	
 	else {
 		Node *node = this->pCursor->InsertPreviousNode(key);
 		if (this->pCursor == this->pHead)
@@ -136,9 +108,13 @@ bool TypingMachine::TypeKey(char key) {
 }
 
 bool TypingMachine::EraseKey() {
-	if (this->pCursor->pPrev) {
+	
+	Node *pNode = this->pCursor->GetPreviousNode();
+	if (pNode) {
 		this->pCursor->ErasePreviousNode();
 		this->count--;
+		if (pNode == this->pHead)
+			this->pHead = this->pCursor;
 		return true;
 	}
 	else
@@ -150,8 +126,8 @@ std::string TypingMachine::Print(char separator) {
 	std::string str;
 	while (pTemp) {
 		str = str + pTemp->GetData();
-		if (pTemp->pNext)
-			pTemp = pTemp->pNext;
+		if (pTemp->GetNextNode() != nullptr)
+			pTemp = pTemp->GetNextNode();
 		else
 			break;
 	}
