@@ -19,7 +19,7 @@ class TypingMachine {
   std::string Print(char separator);
   Node *pCursor;
   Node *pHead;
-  Node *pLast;
+  Node *pTail;
   int count;
 };
 
