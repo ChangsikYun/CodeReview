@@ -3,10 +3,12 @@
 #include "typing_machine.h"
 
 TypingMachine::TypingMachine() {
+
   this->pCursor = new Node('|');
   this->pHead = this->pCursor;
   this->pTail = this->pCursor;
-  this->count = 0;
+  this->nodeCount = 0;
+
   return;
 }
 
@@ -96,13 +98,13 @@ void TypingMachine::RightKey() {
 
 bool TypingMachine::TypeKey(char key) {
 
-	if (this->count > 100 || (key < 0x20 || key > 0x7E))
+	if (this->nodeCount >= 100 || key < 0x20 || key > 0x7E)
 		return false;	
 	else {
 		Node *node = this->pCursor->InsertPreviousNode(key);
 		if (this->pCursor == this->pHead)
 			this->pHead = node;
-		this->count++;
+		this->nodeCount++;
 		return true;
 	}
 }
@@ -112,7 +114,7 @@ bool TypingMachine::EraseKey() {
 	Node *pNode = this->pCursor->GetPreviousNode();
 	if (pNode) {
 		this->pCursor->ErasePreviousNode();
-		this->count--;
+		this->nodeCount--;
 		if (pNode == this->pHead)
 			this->pHead = this->pCursor;
 		return true;
@@ -125,10 +127,12 @@ std::string TypingMachine::Print(char separator) {
 	Node *pTemp = this->pHead;
 	std::string str;
 	while (pTemp) {
-		if (separator != '\0')
-			str = str + pTemp->GetData();
-		else if (pTemp == this->pCursor)
-			str = str + separator;
+		
+		if (pTemp == this->pCursor && separator != '\0')
+			str.push_back(separator);
+		else
+			str.push_back(pTemp->GetData());
+		
 		if (pTemp->GetNextNode() != nullptr)
 			pTemp = pTemp->GetNextNode();
 		else
