@@ -4,6 +4,10 @@
 #define NODE_H_
 
 class Node {
+ private:
+  Node *pNext;
+  Node *pPrev; 
+  char data;
  public:
   explicit Node(char data);
   char GetData();
@@ -13,9 +17,7 @@ class Node {
   Node* GetNextNode();
   bool ErasePreviousNode();
   bool EraseNextNode();
-  Node *pNext;
-  Node *pPrev; 
-  char data;
+
 
 };
 
