@@ -125,8 +125,10 @@ std::string TypingMachine::Print(char separator) {
 	Node *pTemp = this->pHead;
 	std::string str;
 	while (pTemp) {
-		if (separator != '\0' ||  pTemp != this->pCursor )
+		if (separator != '\0')
 			str = str + pTemp->GetData();
+		else if (pTemp == this->pCursor)
+			str = str + separator;
 		if (pTemp->GetNextNode() != nullptr)
 			pTemp = pTemp->GetNextNode();
 		else
