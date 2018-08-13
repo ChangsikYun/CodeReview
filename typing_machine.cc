@@ -124,12 +124,15 @@ bool TypingMachine::EraseKey() {
 }
 
 std::string TypingMachine::Print(char separator) {
-	Node *pTemp = this->pHead;
-	std::string str;
+	Node *pTemp = this->pHead; 
+	std::string str = "";
 	while (pTemp) {
 		
-		if (pTemp == this->pCursor && separator != '\0')
-			str.push_back(separator);
+		if (pTemp == this->pCursor) {
+			if (separator != '\0') {
+				str.push_back(separator);
+			}
+		}
 		else
 			str.push_back(pTemp->GetData());
 		
