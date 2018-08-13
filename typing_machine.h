@@ -4,10 +4,15 @@
 #define TYPING_MACHINE_H_
 
 #include <string>
-
 #include "node.h"
 
 class TypingMachine {
+private:
+	Node *pCursor;
+	Node *pHead;
+	Node *pTail;
+	int nodeCount;
+
  public:
   TypingMachine();
   void HomeKey();
@@ -17,10 +22,6 @@ class TypingMachine {
   bool TypeKey(char key);
   bool EraseKey();
   std::string Print(char separator);
-  Node *pCursor;
-  Node *pHead;
-  Node *pTail;
-  int count;
 };
 
 #endif  // TYPING_MACHINE_H_
