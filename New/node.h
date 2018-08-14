@@ -1,4 +1,4 @@
-// Copyright 2018 <Author>
+// Copyright 2018 Changsik Yun (changsik.yun@samsung.com)
 
 #ifndef NODE_H_
 #define NODE_H_
