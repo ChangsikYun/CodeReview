@@ -51,6 +51,7 @@ private:
 		ASSERT_EQ(tm.Print('|'), std::string("A|B"));
 	}
 	static void RightKeyTest() {
+
 		TypingMachine tm;
 
 		tm.RightKey();
@@ -58,6 +59,7 @@ private:
 
 		tm.TypeKey('A');
 		tm.TypeKey('B');
+		tm.LeftKey();
 		tm.RightKey();
 		ASSERT_EQ(tm.Print('|'), std::string("AB|"));
 	}
