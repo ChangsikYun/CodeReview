@@ -37,9 +37,8 @@ Node* Node::InsertPreviousNode(char data) {
 }
 
 Node* Node::InsertNextNode(char data) {
+	Node *node = new Node(data);
 	if (node) {
-	
-		Node *node = new Node(data);
 		Node *next = this->pNext;
 
 		if (next != nullptr) {
