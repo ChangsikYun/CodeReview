@@ -110,7 +110,8 @@ bool TypingMachine::TypeKey(char key) {
 }
 
 bool TypingMachine::EraseKey() {
-	
+	if (this->pHead == this->pCursor)
+		return false;
 	Node *pNode = this->pCursor->GetPreviousNode();
 	if (pNode) {
 		this->pCursor->ErasePreviousNode();
